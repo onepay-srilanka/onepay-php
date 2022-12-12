@@ -5,6 +5,6 @@
 <?php
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, TRUE);
-echo $input['transaction_id']
-echo $input['status']
+echo $input['transaction_id'];
+echo $input['status'];
 ?>
