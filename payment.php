@@ -58,6 +58,26 @@ curl_close($curl);
 
 $result = json_decode($response, true);
 
+/* sample response 
+{
+    "status": 1000,
+    "message": "success",
+    "data": {
+        "ipg_transaction_id": "7CJ7118C0E2175226106A",
+        "amount": {
+            "gross_amount": 202.0,
+            "discount": 0,
+            "handling_fee": 0,
+            "net_amount": 202.0,
+            "currency": "LKR"
+        },
+        "gateway": {
+            "redirect_url": "https://gateway-v2.onepay.lk/redirect/LS341187BA4F08DF37ABE/7CJ7118C0E2175226106A/86f8717cce85bc69affa9d4950bce9c02d30c5643e34219b53bacbf0a681f263"
+        }
+    }
+}
+*/
+
 if (isset($result['data']['gateway']['redirect_url'])) {
 
   $re_url = $result['data']['gateway']['redirect_url'];
