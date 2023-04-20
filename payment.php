@@ -81,7 +81,7 @@ $result = json_decode($response, true);
 if (isset($result['data']['gateway']['redirect_url'])) {
 
   $re_url = $result['data']['gateway']['redirect_url'];
-  header('Location: ' . $re_url, true, $permanent ? 301 : 302);
+  header('Location: ' . $re_url, true);
 
   exit();
 
