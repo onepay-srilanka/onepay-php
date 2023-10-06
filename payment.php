@@ -8,21 +8,22 @@ $studentId = $_REQUEST["stuid"];
 $pay = $_REQUEST["pay"];
 $reference = "1234567898";
 
-$app_id = "37JR1187AEA68DE9D6D84";
-$hash_salt = "JPHX1187AEA68DE9D6DCC";
-$app_token = "438092d19904343b0baa6d77376a22df6ff2b104ec9a524098b7406f5e50e3e07a9fceeadd0ff522.FXMS1187AEA68DE9D6DF1";
+$app_id = "Z1DO118BFD7A68F3CA0B5";
+$hash_salt = "RNSI118BFD7A68F3CA0DE";
+$app_token = "84a5fc2ce89e8d76dcb6a965aeab765e1ec21a85e031cfbbc9cdba24fc6ba4f961254e388988b30e.CI47118C246A5101FF7BC";
 
 $onepay_args = array(
   
-  "amount" => floatval($pay),
+  "amount" => $pay, //only upto 2 decimal points
+  "currency" => "LKR", //LKR OR USD
   "app_id"=> $app_id,
-  "reference" => "{$reference}",
-  "customer_first_name" => $firstname,
-  "customer_last_name"=> $lastname,
-  "customer_phone_number" => $contact,
-  "customer_email" => $email,
-  "transaction_redirect_url" => "https://exmple.lk/respones",
-
+  "reference" => "{$reference}", //must have 10 or more digits , spaces are not allowed
+  "customer_first_name" => $firstname, // spaces are not allowed
+  "customer_last_name"=> $lastname, // spaces are not allowed
+  "customer_phone_number" => $contact, //must start with +94, spaces are not allowed
+  "customer_email" => $email, // spaces are not allowed
+  "transaction_redirect_url" => "https://exmple.lk/respones", // spaces are not allowed
+  "additional_data" => "sample" //only support string, spaces are not allowed, this will return in response also
 );
 
 $data=json_encode($onepay_args,JSON_UNESCAPED_SLASHES);
@@ -33,7 +34,7 @@ $hash_result = hash('sha256',$data_json);
 
 $curl = curl_init();
 
-$url = 'https://merchant-api-live-v2.onepay.lk/api/ipg/gateway/request-transaction/?hash=';
+$url = 'https://merchant-api-live-v2.onepay.lk/api/ipg/gateway/request-payment-link/?hash=';
 $url .= $hash_result;
 
 curl_setopt_array($curl, array(
@@ -44,7 +45,7 @@ curl_setopt_array($curl, array(
   CURLOPT_TIMEOUT => 0,
   CURLOPT_FOLLOWLOCATION => true,
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => 'GET',
+  CURLOPT_CUSTOMREQUEST => 'POST',
   CURLOPT_POSTFIELDS => $data,
   CURLOPT_HTTPHEADER => array(
     'Authorization:'."".$app_token,
@@ -58,30 +59,10 @@ curl_close($curl);
 
 $result = json_decode($response, true);
 
-/* sample response 
-{
-    "status": 1000,
-    "message": "success",
-    "data": {
-        "ipg_transaction_id": "7CJ7118C0E2175226106A",
-        "amount": {
-            "gross_amount": 202.0,
-            "discount": 0,
-            "handling_fee": 0,
-            "net_amount": 202.0,
-            "currency": "LKR"
-        },
-        "gateway": {
-            "redirect_url": "https://gateway-v2.onepay.lk/redirect/LS341187BA4F08DF37ABE/7CJ7118C0E2175226106A/86f8717cce85bc69affa9d4950bce9c02d30c5643e34219b53bacbf0a681f263"
-        }
-    }
-}
-*/
-
 if (isset($result['data']['gateway']['redirect_url'])) {
 
   $re_url = $result['data']['gateway']['redirect_url'];
-  header('Location: ' . $re_url, true);
+  header('Location: ' . $re_url, true, $permanent ? 301 : 302);
 
   exit();
 
